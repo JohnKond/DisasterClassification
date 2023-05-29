@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 # from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from MyDataset import torch_transform
 import matplotlib.pyplot as plt
-from plots import plot_image_distributions
 
 # to supress tensorflow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -151,8 +150,8 @@ def preprocess(DATA_DIR):
 
                 if first:
                     images_example_before.append(processed_image)
-                    plt.imshow(processed_image)
-                    plt.show()
+                    # plt.imshow(processed_image)
+                    # plt.show()
                     first = 0
 
                 # images = np.append(images, np.expand_dims(processed_image.flatten(), axis=0), axis=0)

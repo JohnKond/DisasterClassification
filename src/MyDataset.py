@@ -21,8 +21,5 @@ class torch_transform(Dataset):
         return image, label
 
 
-
-# Example of how to iterate over the data loaders
-# for images, labels in train_loader:
     
 

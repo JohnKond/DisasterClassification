@@ -4,13 +4,15 @@ import numpy as np
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
-from Preprocess import preprocess
+from torchvision.utils import make_grid
+from Preprocess import preprocess, split_data
 from PCA import applyPCA, applyPCAFlat
 from MyDataset import torch_transform
-from plots import plot_images, plot_variance
-from TransferLearning import train,evaluate
+from plots import plot_variance
+import matplotlib.pyplot as plt
+# from TransferLearning import train,evaluate
 from SVM import SVM_train
-from CNN import NN_pipeline
+from CNN_utils import read_files
 
 # Configure project path
 project_path = "/Users/kondo/Documents/master/ML/Disaster_Image_Detection/"
@@ -102,7 +104,13 @@ def PCA_pipeline():
     plot_variance(load_pca_object())
 
 
+
+
+
 def NN_pipeline():
+    print('-------------------------------')
+    print('| Starting Neural Network pipeline    |')
+    print('-------------------------------\n\n')
     # if data are already processed:
     # TODO put NOT
     if not os.path.exists(NN_PROCESSED_DATA_PATH):
@@ -119,6 +127,12 @@ def NN_pipeline():
         # load train and test sets from disk in order to save time and space
         X_train, y_train, X_test, y_test = load_processed_data(NN_PROCESSED_DATA_PATH)
     
+    train_loader = torch_transform(X_train, y_train)
+    test_loader = torch_transform(X_test, y_test)
+
+    # show train batch
+    show_batch(train_loader)
+    
     
 
 def main():
@@ -129,7 +143,8 @@ def main():
     
 
     # run Neural Network pipeline
-    NN_pipeline()
+    # NN_pipeline()
+    read_files(DATA_DIR)
 
 
     
