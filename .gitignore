@@ -1,0 +1,12 @@
+venv/
+.idea/
+.DS_Store
+data/
+example_data/
+transformed_data/
+example_preprocessed_data/
+nn_preprocessed_data/
+preprocessed_data/
+src/__pycache__
+preprocessed_data/
+pca_model.pkl
