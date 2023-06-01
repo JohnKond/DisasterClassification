@@ -10,54 +10,50 @@ from torchvision.utils import make_grid
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
-from TF_CNN import create_model, train_model
 
-from Preprocess import preprocess, split_data
-from PCA import applyPCA, applyPCAFlat
 from MyDataset import torch_transform
-from plots import plot_variance
+from plots import plot_variance, plot_distribution, plot_hist_box_plot, plot_initial_images,pie_chart_images
 import matplotlib.pyplot as plt
-# from TransferLearning import train,evaluate
-from SVM import SVM_train
+from SVM import SVM_train, RF_train
 from CNN_utils import read_files,accuracy, CNN_evaluate, CNN_fit
 from CNN import DisasterClassification
+import tensorflow as tf
+
+# 
+from save_load_utils import save_processed_data, save_pca_object, load_pca_object, save_cnn_model, load_cnn_model, load_processed_data
+
+# for pre-processing 
+from Preprocess import preprocess, split_data
+
+
+# for PCA
+from PCA import applyPCA, applyPCAFlat
+
+# for my CNN network
+from TF_CNN import CNN_create_model, CNN_train_model
+
+
+# for tranfer learning CNN network
+from TranferLearning import TL_read_data, TL_create_model, TL_compile_model, TL_train_model,TL_test_model
+
+
+
+
 
 # Configure project path
-project_path = "/Users/kondo/Documents/master/ML/Disaster_Image_Detection/"
+project_path = "/Users/kondo/Documents/master/ML/DisasterClassification/"
 
 
 
-# Configure data path of original images and data path of 
-# transformed images
+# Paths of respective folders 
 DATA_DIR = project_path + 'data'
 PCA_DATA_DIR = project_path+ 'transformed_data'
-PROCESSED_DATA_PATH = project_path + 'preprocessed_data'
-NN_PROCESSED_DATA_PATH = project_path + 'nn_preprocessed_data'
-MODEL_PARAMS_FILE = project_path + 'cnn_model_params.pth'
+PROCESSED_DATA_DIR = project_path + 'preprocessed_data'
+NN_PROCESSED_DATA_DIR = project_path + 'nn_preprocessed_data'
+DL_MODEL_PARAMS_FILE = project_path + 'cnn_model_params.pth'
+TRAINED_MODELS_DIR = project_path + 'trained_models/'
+TRAINED_MODEL_FILE = TRAINED_MODELS_DIR + 'TL_model.h5'
 
-def save_processed_data(X_train, y_train, X_test, y_test,path):
-
-    # Create a folder to store the preprocessed data
-    # save_folder = 'preprocessed_data'
-    print('Saving data to numpy arrays..')
-    os.makedirs(path, exist_ok=True)
-    np.save(os.path.join(path, 'X_train.npy'), X_train)
-    np.save(os.path.join(path, 'X_test.npy'), X_test)
-    np.save(os.path.join(path, 'y_train.npy'), y_train)
-    np.save(os.path.join(path, 'y_test.npy'), y_test)
-
-
-
-def save_pca_object(pca):
-    filename = 'pca_model.pkl'
-    with open(filename, 'wb') as file:
-        pickle.dump(pca, file)
-
-def load_pca_object():
-    # Load PCA object
-    with open('pca_model.pkl', 'rb') as file:
-        pca_loaded = pickle.load(file)
-    return pca_loaded
 
 def convert_to_data_loaders(X_train, y_train, X_test, y_test):
      # Convert the numpy arrays to PyTorch tensors
@@ -74,25 +70,11 @@ def convert_to_data_loaders(X_train, y_train, X_test, y_test):
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)   
     return train_loader, test_loader
 
-def load_pca_object():
-    with open('pca_model.pkl', 'rb') as f:
-        pca = pickle.load(f)
-    return pca
-
-def load_processed_data(path):
-    print('Loading data from numpy arrays..')
-    X_train = np.load(os.path.join(path, 'X_train.npy'))
-    y_train = np.load(os.path.join(path, 'y_train.npy'))
-    X_test = np.load(os.path.join(path, 'X_test.npy'))
-    y_test = np.load(os.path.join(path, 'y_test.npy'))
-    return X_train, y_train, X_test, y_test
-
-
 
 def PCA_pipeline():
     # if data are already processed:
     # TODO put NOT
-    if not os.path.exists(PROCESSED_DATA_PATH):
+    if not os.path.exists(PROCESSED_DATA_DIR):
         # preprocess images and split in train and test set
         images, labels  = preprocess(DATA_DIR)
 
@@ -103,24 +85,19 @@ def PCA_pipeline():
         X_train, y_train, X_test, y_test = split_data(images_flat, labels)
         pca_object, PCA_X_train, PCA_X_test = applyPCA(X_train, X_test, y_train, y_test)
         save_pca_object(pca_object)
-        save_processed_data(PCA_X_train, y_train, PCA_X_test, y_test,PROCESSED_DATA_PATH)
+        save_processed_data(PCA_X_train, y_train, PCA_X_test, y_test,PROCESSED_DATA_DIR)
 
     else :
         # load train and test sets from disk in order to save time and space
-        PCA_X_train, y_train, PCA_X_test, y_test = load_processed_data(PROCESSED_DATA_PATH)    
+        PCA_X_train, y_train, PCA_X_test, y_test = load_processed_data(PROCESSED_DATA_DIR)    
 
-    
-    plot_variance(load_pca_object())
+    # plot_variance(load_pca_object())
+    SVM_train(PCA_X_train,y_train, PCA_X_test, y_test)
+    RF_train(PCA_X_train,y_train, PCA_X_test, y_test)
 
 
-def save_cnn_model(model):
-    torch.save(model.state_dict(), MODEL_PARAMS_FILE)
-    
-def load_cnn_model():
-    model = DisasterClassification(*args, **kwargs)
-    model.load_state_dict(torch.load(PATH))
-    model.eval()
-    return model
+
+
 
 
 
@@ -164,7 +141,7 @@ def CNN_test(model, test_loader):
     # Print the predictions
     print(predictions)
 
-def NN_pipeline_prev():
+def myCNN_pipeline_prev():
     print('-------------------------------')
     print('| Starting Neural Network pipeline    |')
     print('-------------------------------\n\n')
@@ -192,7 +169,7 @@ def NN_pipeline_prev():
     
     
         
-def NN_pipeline():
+def myCNN_pipeline():
         print(' -------------------------------------')
         print('| Starting Neural Network pipeline    |')
         print(' -------------------------------------\n\n')
@@ -205,22 +182,63 @@ def NN_pipeline():
             save_processed_data(X_train, y_train, X_val, y_val, X_test, y_test, NN_PROCESSED_DATA_PATH)
 
 
+
         # create validation data for our model
         X_train, y_train, X_val, y_val = split_data(X_train, y_train)
 
+        # normalize
+        X_train = X_train / 255
+        X_val = X_val / 255
+        X_val = X_test / 255
 
-        # print(X_train.shape)
-        # print(X_val.shape)
-        # print(X_test.shape)
-
-        model = create_model()
-        trained_model = train_model(model, X_train, y_train, X_val, y_val)
+        # create model architecture
+        model = CNN_create_model()
+        # train model
+        trained_model = CNN_train_model(model, X_train, y_train, X_val, y_val)
         
         
         
         
         
 
+def transferLearningPipeline():
+        print(' ----------------------------------------')
+        print('| Starting Transfer Learning pipeline    |')
+        print(' ----------------------------------------\n\n')
+
+        # read data
+        train_dataset, validation_dataset, test_dataset = TL_read_data(DATA_DIR)
+
+        # If model already exists load, else create new model and train
+        if os.path.exists(TRAINED_MODEL_FILE):
+            #import model
+            trained_model = tf.keras.models.load_model(TRAINED_MODEL_FILE)
+        else:
+
+            # create model
+            model = TL_create_model(train_dataset)
+
+
+            # loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+            loss = tf.keras.losses.CategoricalCrossentropy()
+
+            # compile model
+            compiled_model = TL_compile_model(model=model,
+                        base_learning_rate=0.0001,
+                        loss=loss,
+                        metrics=['accuracy'])
+            
+            
+            # train model
+            trained_model = TL_train_model(compiled_model, train_dataset, validation_dataset)
+            # save trained model
+            trained_model.save(TRAINED_MODEL_FILE)
+            
+            # test the model
+            TL_test_model(trained_model,test_dataset)
+        
+        
+        
         
 
 
@@ -229,13 +247,20 @@ def NN_pipeline():
 
 def main():
 
-    # run PCA_pipeline()
-    # PCA_pipeline()
+    # dataset plots
+    # plot_distribution(DATA_DIR)
+    # plot_initial_images(DATA_DIR)
+    # pie_chart_images(DATA_DIR)
+
+    # run PCA_pipeline
+    PCA_pipeline()
 
     
 
     # run Neural Network pipeline
-    NN_pipeline()
+    # NN_pipeline()
+
+    # transferLearningPipeline()
 
 
     
@@ -249,7 +274,7 @@ def main():
     # train(train_loader)
 
 
-    # SVM_train(PCA_X_train,y_train, PCA_X_test, y_test)
+    # 
 
 
 

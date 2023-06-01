@@ -10,3 +10,5 @@ preprocessed_data/
 src/__pycache__
 preprocessed_data/
 pca_model.pkl
+trained_models/TL_model.h5
+train_val_accuracy_per_epoch_run3.png

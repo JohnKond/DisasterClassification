@@ -2,9 +2,18 @@ import tensorflow as tf
 from tensorflow.keras import layers,models
 
 
+IMG_SIZE = (160,160)
 
+def format(image, label):
+  """
+  returns an image that is reshaped to IMG_SIZE
+  """
+  image = tf.cast(image, tf.float32)
+  image = image/255
+  image = tf.image.resize(image, (IMG_SIZE, IMG_SIZE))
+  return image, label
 
-def create_model():
+def CNN_create_model():
     model = models.Sequential()
     # input_shape=(32, 32, 3) --> images of 32x32 size and 3 channels
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3))) # layers.Conv2D(32, (3, 3) --> 32 filters of size 3x3 each
@@ -21,7 +30,7 @@ def create_model():
     return model
 
 
-def train_model(model, train_images, train_labels, val_images, val_labels):
+def CNN_train_model(model, train_images, train_labels, val_images, val_labels):
     model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
