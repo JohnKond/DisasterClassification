@@ -1,6 +1,6 @@
 import os
 import torch
-import pickle
+import pickle as pkl
 import numpy as np
 
 def save_processed_data(X_train, y_train, X_test, y_test,path):
@@ -17,13 +17,13 @@ def save_processed_data(X_train, y_train, X_test, y_test,path):
 def save_pca_object(pca):
     filename = 'pca_model.pkl'
     with open(filename, 'wb') as file:
-        pickle.dump(pca, file)
+        pkl.dump(pca, file)
 
 
 def load_pca_object():
     # Load PCA object
     with open('pca_model.pkl', 'rb') as file:
-        pca_loaded = pickle.load(file)
+        pca_loaded = pkl.load(file)
     return pca_loaded
 
 
@@ -48,3 +48,14 @@ def load_processed_data(DIR):
     X_test = np.load(os.path.join(DIR, 'X_test.npy'))
     y_test = np.load(os.path.join(DIR, 'y_test.npy'))
     return X_train, y_train, X_test, y_test
+
+
+
+def load_model(model,FILE):
+    trained_model = pkl.load(model, FILE)
+    return trained_model
+
+
+def save_model(model, FILE):
+    pkl.dump(model, FILE)
+    return

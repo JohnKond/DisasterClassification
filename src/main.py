@@ -14,7 +14,7 @@ import torch.optim as optim
 from MyDataset import torch_transform
 from plots import plot_variance, plot_distribution, plot_hist_box_plot, plot_initial_images,pie_chart_images
 import matplotlib.pyplot as plt
-from SVM import SVM_train, RF_train
+from SVM import ML_pipeline
 from CNN_utils import read_files,accuracy, CNN_evaluate, CNN_fit
 from CNN import DisasterClassification
 import tensorflow as tf
@@ -52,7 +52,10 @@ PROCESSED_DATA_DIR = project_path + 'preprocessed_data'
 NN_PROCESSED_DATA_DIR = project_path + 'nn_preprocessed_data'
 DL_MODEL_PARAMS_FILE = project_path + 'cnn_model_params.pth'
 TRAINED_MODELS_DIR = project_path + 'trained_models/'
-TRAINED_MODEL_FILE = TRAINED_MODELS_DIR + 'TL_model.h5'
+NN_MODEL_FILE = TRAINED_MODELS_DIR + 'TL_model.h5'
+RF_MODEL_FILE = TRAINED_MODELS_DIR + 'RF_model.pkl'
+SVM_MODEL_FILE = TRAINED_MODELS_DIR + 'RF_model.pkl'
+
 
 
 def convert_to_data_loaders(X_train, y_train, X_test, y_test):
@@ -91,9 +94,11 @@ def PCA_pipeline():
         # load train and test sets from disk in order to save time and space
         PCA_X_train, y_train, PCA_X_test, y_test = load_processed_data(PROCESSED_DATA_DIR)    
 
+
+    ML_pipeline(PCA_X_train, y_train, PCA_X_test, y_test,RF_MODEL_FILE, SVM_MODEL_FILE)
     # plot_variance(load_pca_object())
-    SVM_train(PCA_X_train,y_train, PCA_X_test, y_test)
-    RF_train(PCA_X_train,y_train, PCA_X_test, y_test)
+    # SVM_train(PCA_X_train,y_train, PCA_X_test, y_test)
+    # RF_train(PCA_X_train,y_train, PCA_X_test, y_test)
 
 
 
