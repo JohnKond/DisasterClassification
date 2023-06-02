@@ -10,6 +10,8 @@ IMAGE_SIZE = (224, 224)
 
 
 
+
+
 def plot_initial_images(DATA_DIR):
     CATEGORIES = ["Wildfire", "Earthquake", "Cyclone", "Flood"]
 

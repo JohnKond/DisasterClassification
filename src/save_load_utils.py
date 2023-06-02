@@ -51,11 +51,11 @@ def load_processed_data(DIR):
 
 
 
-def load_model(model,FILE):
-    trained_model = pkl.load(model, FILE)
+def load_model(FILE):
+    trained_model = pkl.load(open(FILE, 'rb'))
     return trained_model
 
 
 def save_model(model, FILE):
-    pkl.dump(model, FILE)
+    pkl.dump(model, open(FILE, 'wb'))
     return

@@ -18,13 +18,11 @@ from SVM import ML_pipeline
 from CNN_utils import read_files,accuracy, CNN_evaluate, CNN_fit
 from CNN import DisasterClassification
 import tensorflow as tf
-
-# 
+ 
 from save_load_utils import save_processed_data, save_pca_object, load_pca_object, save_cnn_model, load_cnn_model, load_processed_data
 
 # for pre-processing 
 from Preprocess import preprocess, split_data
-
 
 # for PCA
 from PCA import applyPCA, applyPCAFlat
@@ -32,12 +30,8 @@ from PCA import applyPCA, applyPCAFlat
 # for my CNN network
 from TF_CNN import CNN_create_model, CNN_train_model
 
-
 # for tranfer learning CNN network
 from TranferLearning import TL_read_data, TL_create_model, TL_compile_model, TL_train_model,TL_test_model
-
-
-
 
 
 # Configure project path
@@ -51,10 +45,12 @@ PCA_DATA_DIR = project_path+ 'transformed_data'
 PROCESSED_DATA_DIR = project_path + 'preprocessed_data'
 NN_PROCESSED_DATA_DIR = project_path + 'nn_preprocessed_data'
 DL_MODEL_PARAMS_FILE = project_path + 'cnn_model_params.pth'
+
+# data dir and file for trained models
 TRAINED_MODELS_DIR = project_path + 'trained_models/'
-NN_MODEL_FILE = TRAINED_MODELS_DIR + 'TL_model.h5'
+TL_MODEL_FILE = TRAINED_MODELS_DIR + 'TL_model.h5'
 RF_MODEL_FILE = TRAINED_MODELS_DIR + 'RF_model.pkl'
-SVM_MODEL_FILE = TRAINED_MODELS_DIR + 'RF_model.pkl'
+SVM_MODEL_FILE = TRAINED_MODELS_DIR + 'SVM_model.pkl'
 
 
 
@@ -75,8 +71,13 @@ def convert_to_data_loaders(X_train, y_train, X_test, y_test):
 
 
 def PCA_pipeline():
-    # if data are already processed:
-    # TODO put NOT
+
+
+    print(' ----------------------------------------')
+    print('| Starting Transfer Learning pipeline    |')
+    print(' ----------------------------------------\n\n')
+
+    # if data are already processed, just import them
     if not os.path.exists(PROCESSED_DATA_DIR):
         # preprocess images and split in train and test set
         images, labels  = preprocess(DATA_DIR)
@@ -84,9 +85,16 @@ def PCA_pipeline():
         # reshape images
         images_flat = images.reshape(images.shape[0], -1)
 
-
+        # train-test split 
         X_train, y_train, X_test, y_test = split_data(images_flat, labels)
+        
+        # apply PCA to the dataset
         pca_object, PCA_X_train, PCA_X_test = applyPCA(X_train, X_test, y_train, y_test)
+        
+        # plot explained variance 
+        plot_variance(pca_object)
+
+        # save pca object and processed data for future usage
         save_pca_object(pca_object)
         save_processed_data(PCA_X_train, y_train, PCA_X_test, y_test,PROCESSED_DATA_DIR)
 
@@ -94,17 +102,8 @@ def PCA_pipeline():
         # load train and test sets from disk in order to save time and space
         PCA_X_train, y_train, PCA_X_test, y_test = load_processed_data(PROCESSED_DATA_DIR)    
 
-
+    # run ML pipeline : train and test SVM and RF model
     ML_pipeline(PCA_X_train, y_train, PCA_X_test, y_test,RF_MODEL_FILE, SVM_MODEL_FILE)
-    # plot_variance(load_pca_object())
-    # SVM_train(PCA_X_train,y_train, PCA_X_test, y_test)
-    # RF_train(PCA_X_train,y_train, PCA_X_test, y_test)
-
-
-
-
-
-
 
 
 
@@ -215,9 +214,9 @@ def transferLearningPipeline():
         train_dataset, validation_dataset, test_dataset = TL_read_data(DATA_DIR)
 
         # If model already exists load, else create new model and train
-        if os.path.exists(TRAINED_MODEL_FILE):
+        if os.path.exists(TL_MODEL_FILE):
             #import model
-            trained_model = tf.keras.models.load_model(TRAINED_MODEL_FILE)
+            trained_model = tf.keras.models.load_model(TL_MODEL_FILE)
         else:
 
             # create model
@@ -237,54 +236,36 @@ def transferLearningPipeline():
             # train model
             trained_model = TL_train_model(compiled_model, train_dataset, validation_dataset)
             # save trained model
-            trained_model.save(TRAINED_MODEL_FILE)
+            trained_model.save(TL_MODEL_FILE)
             
             # test the model
             TL_test_model(trained_model,test_dataset)
         
-        
-        
-        
 
 
-
-    
+def data_analysis():
+    plot_distribution(DATA_DIR)
+    plot_initial_images(DATA_DIR)
+    pie_chart_images(DATA_DIR)
+    return
 
 def main():
 
-    # dataset plots
-    # plot_distribution(DATA_DIR)
-    # plot_initial_images(DATA_DIR)
-    # pie_chart_images(DATA_DIR)
+    # perform data analysis
+    data_analysis()
 
     # run PCA_pipeline
     PCA_pipeline()
 
     
 
-    # run Neural Network pipeline
-    # NN_pipeline()
-
-    # transferLearningPipeline()
+    # run pipeline with my custom CNN pipeline
+    myCNN_pipeline()
 
 
-    
-    # create data loader for PyTorch model
-    # train_loader, test_loader = convert_to_data_loaders(PCA_X_train, y_train, PCA_X_test, y_test)
-
-    # for images, labels in train_loader:
-        # print(images.shape)
-        # print(labels.shape)
-    # train model (transfer learning)
-    # train(train_loader)
-
-
-    # 
-
-
-
-
-
+    # run transfer learning pipeline, using pretrained model MobileNetV2
+    transferLearningPipeline()
+        
 
 
 # Press the green button in the gutter to run the script.

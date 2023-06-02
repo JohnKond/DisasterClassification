@@ -28,16 +28,6 @@ def TL_augment_dataset(dataset):
         tf.keras.layers.RandomFlip('horizontal'),
         tf.keras.layers.RandomRotation(0.2),
     ])
-
-    # for image, _ in dataset.take(1):
-    #     plt.figure(figsize=(10, 10))
-    #     first_image = image[0]
-    #     for i in range(9):
-    #         ax = plt.subplot(3, 3, i + 1)
-    #         augmented_image = data_augmentation(tf.expand_dims(first_image, 0))
-    #         plt.imshow(augmented_image[0] / 255)
-    #         plt.axis('off')
-    # plt.show()
     return data_augmentation
 
 def TL_read_data(DATA_DIR):
