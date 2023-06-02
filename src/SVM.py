@@ -28,7 +28,7 @@ SVM_param_grid = {
 def ML_pipeline(PCA_X_train, y_train, PCA_X_test, y_test, SVM_FILE, RF_FILE):
     
 
-    if os.path.exists(SVM_FILE) and os.path.exists(SVM_FILE):
+    if os.path.exists(SVM_FILE) and os.path.exists(RF_FILE):
         SVM_model = load_model(SVM_FILE)
         RF_model = load_model(RF_FILE)
     else:
