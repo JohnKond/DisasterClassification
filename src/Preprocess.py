@@ -4,9 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA, IncrementalPCA
 from sklearn.preprocessing import LabelEncoder
-from torch.utils.data import DataLoader
 # from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from MyDataset import torch_transform
 import matplotlib.pyplot as plt
 
 # to supress tensorflow warnings
