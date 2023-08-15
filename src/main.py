@@ -167,17 +167,17 @@ def data_analysis():
 def main():
 
     # perform data analysis
-    # data_analysis()
+    data_analysis()
 
     # run PCA_pipeline
     PCA_pipeline()
 
     # run pipeline with my custom CNN pipeline
-    # myCNN_pipeline()
+    myCNN_pipeline()
 
 
     # run transfer learning pipeline, using pretrained model MobileNetV2
-    # transferLearningPipeline()
+    transferLearningPipeline()
         
 
 
