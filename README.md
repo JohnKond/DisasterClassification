@@ -29,4 +29,4 @@ To run the code, follow these steps:
 
 2. Navigate to the `src/` directory in your terminal or command prompt.
 
-3. Run the `main.py` script by executing the following command: python main.py
+3. Run the `main.py` script by executing the following command: ```python main.py```
