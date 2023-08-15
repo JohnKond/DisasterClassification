@@ -87,9 +87,9 @@ def PCA_pipeline():
 
         
 def myCNN_pipeline():
-        print(' -------------------------------------')
-        print('| Starting Neural Network pipeline    |')
-        print(' -------------------------------------\n\n')
+        print(' -------------------------------------------')
+        print('| Starting myCNN Neural Network pipeline    |')
+        print(' -------------------------------------------\n\n')
 
         # read data
         train_dataset, validation_dataset, test_dataset = CNN_read_data(DATA_DIR)
@@ -170,16 +170,14 @@ def main():
     # data_analysis()
 
     # run PCA_pipeline
-    # PCA_pipeline()
-
-    
+    PCA_pipeline()
 
     # run pipeline with my custom CNN pipeline
     # myCNN_pipeline()
 
 
     # run transfer learning pipeline, using pretrained model MobileNetV2
-    transferLearningPipeline()
+    # transferLearningPipeline()
         
 
 

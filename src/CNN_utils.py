@@ -111,7 +111,8 @@ def CNN_plot_learning_curve(history):
 
 def CNN_train_model(model, train_dataset, validation_dataset):
     
-    initial_epochs = 10
+    initial_epochs = 20
+    
 
     loss0,accuracy0 = model.evaluate(validation_dataset)
     print("initial loss: {:.2f}".format(loss0))
@@ -195,11 +196,14 @@ def calculate_ROC(model,test_dataset):
 def CNN_test_model(model,test_dataset):
 
 
-    calculate_ROC(model, test_dataset)
+    # calculate_ROC(model, test_dataset)
     y_true, y_pred = get_predictions(model, test_dataset)
     f1 = metrics.f1_score(y_true, y_pred, average='weighted')
     accuracy = metrics.accuracy_score(y_true, y_pred)
     
+    
+    # CNN_plot_learning_curve(model)
+
     print("f1-score : {:.2f}".format(f1))
     print("accuracy : {:.2f}".format(accuracy))
 
