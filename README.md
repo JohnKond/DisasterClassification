@@ -1,6 +1,6 @@
 # Disaster Images Classification
 
-![Images before and after PCA](https://github.com/JohnKond/DisasterClassification/images_before_after_pca.png?raw=true)
+![Images before and after PCA](https://github.com/JohnKond/DisasterClassification/blob/main/images_before_after_pca.png?raw=true)
 ## Abstract
 
 The objective of the project is to develop an efficient classification model that can accurately identify different types of disasters based on visual information. Three different techniques were explored and evaluated to address this task: 
