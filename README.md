@@ -1,6 +1,15 @@
 # Disaster Images Classification
 
-This project focuses on the classification of disaster images using machine learning techniques. The objective is to develop an efficient model that can accurately identify different types of disasters based on visual information.
+
+## Abstract
+
+The objective of the project is to develop an efficient classification model that can accurately identify different types of disasters based on visual information. Three different techniques were explored and evaluated to address this task: 
+- Principal Component Analysis (PCA) combined with tabular models (Random Forest and SVM)
+- Convolutional Neural Network (CNN)
+- Transfer Learning using a pretrained MobileV2-Net model.
+The experiments and evaluations were performed on a dataset consisting of images from various disaster categories. The results demonstrated that Transfer Learning using the MobileV2-Net model yielded the highest accuracy, showcasing its effectiveness in image classification tasks with limited data.
+
+For more information, please see the project report.
 
 ## Project Structure
 
