@@ -1,4 +1,5 @@
 # Disaster Images Classification
+## Author: Ioannis Kontogiorgakis
 
 ![Images before and after PCA](https://github.com/JohnKond/DisasterClassification/blob/main/images_before_after_pca.png?raw=true)
 
